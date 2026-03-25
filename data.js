@@ -5,7 +5,7 @@ export const films = [
         annee_de_sortie: "2010-2022",
         descriotion: "le shérif adjoint Rick Grimes sort du coma et apprend que le monde est en ruine, il doit aider un groupe de survivants à rester en vie.",
         auteur: "Robert kirkman",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
     },
     {
@@ -14,7 +14,7 @@ export const films = [
         annee_de_sortie: "2013-2023",
         descriotion: "Après la destruction de sa ville natale et la mort de sa mère, le jeune Eren Yeager promet de purger la terre des géants humanoïdes appelés Titans qui menacent l'humanité toute entière.",
         auteur: "Shinji Higuchi",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "10",  
     },
     {
@@ -23,7 +23,7 @@ export const films = [
         annee_de_sortie: "2001",
         descriotion: "En 2029, un astronaute de la Force aérienne se heurte à une planète énigmatique où des singes évolués et parlants dominent une race d'humains primitifs.",
         auteur: "Pierre Boulle",
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20", 
     },
     {
@@ -32,7 +32,7 @@ export const films = [
         annee_de_sortie: "2007",
         descriotion: "Des années après qu'une épidémie a anéanti presque tous les êtres humains et transformé le reste en monstres, le seul survivant à New York se bat vaillamment pour trouver un remède.",
         auteur: "Richard Matheson",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
     },
     {
@@ -41,7 +41,7 @@ export const films = [
         annee_de_sortie: "2014-2015",
         descriotion: "Un policier local essaie de faire face aux problèmes au sein de sa famille tandis que la tension croissante dans la communauté entraîne une effusion de sang.",
         auteur: "Cormac McCarthy",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
     },
     {
@@ -50,7 +50,7 @@ export const films = [
         annee_de_sortie: "2013",
         descriotion: "Dans un futur où une expérience de changement climatique ratée a tué toute vie sur Terre, à l'exception de quelques chanceux qui ont embarqué dans le Snowpiercer, le transperceneige, un train où a surgi une hiérarchie des classes et qui voyage autour du globe.",
         auteur: "Bong Joon-ho",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
     },
 {
@@ -59,7 +59,7 @@ export const films = [
         annee_de_sortie: "2013",
         descriotion: "Gerry Lane, ancien employé des Nations Unies, traverse le monde dans une véritable course contre la montre pour mettre fin à la pandémie de zombies qui renverse les armées et les gouvernements et menace de détruire l'humanité toute entière.",
         auteur: "Marc Forster",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -68,7 +68,7 @@ export const films = [
         annee_de_sortie: "2023",
         descriotion: "20 ans après une pandémie transformant les humains en zombies, un homme ayant perdu sa fille à l'aube de cette pandémie ainsi qu'une orpheline ayant croisé sa route vont se lancer dans un voyage afin de rejoindre d'autres survivants",
         auteur: "Neil Druckmann",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
 },
 {
@@ -77,7 +77,7 @@ export const films = [
         annee_de_sortie: "1988",
         descriotion: "Un projet militaire secret met en danger Néo-Tokyo lorsqu'il transforme le membre d'un gang de motards en un psychopathe psychique déchaîné qui ne peut être arrêté que par deux adolescents et un groupe de voyants.",
         auteur: "Katsuhiro Ōtomo",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -86,7 +86,7 @@ export const films = [
         annee_de_sortie: "2019",
         descriotion: "Dans un monde où l'humanité a été pétrifiée, le génie scientifique Senku et son ami musclé Taiju utilisent leurs compétences pour reconstruire la civilisation.",
         auteur: "Riichiro Inagak",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
 },
 {
@@ -95,7 +95,7 @@ export const films = [
         annee_de_sortie: "2024",
         descriotion: "Adaptation du jeu vidéo se déroulant dans une Amérique post apocalyptique.",
         auteur: "Jonathan Nolan",
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20",
 },
 {
@@ -104,7 +104,7 @@ export const films = [
         annee_de_sortie: "2018",
         descriotion: "Une femme et deux enfants aux yeux bandés traversent un endroit dystopique au bord d'une rivière.",
         auteur: "Susanne Bier",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "10",
 },
 {
@@ -113,7 +113,7 @@ export const films = [
         annee_de_sortie: "2018",
         descriotion: "Dans un monde post-apocalyptique, une famille est forcée de vivre en silence pour se protéger de monstres à l'ouïe ultra-sensible.",
         auteur: "John Krasinski",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -121,7 +121,7 @@ export const films = [
         titre: "Waterworld",
         annee_de_sortie: "1995",
         descriotion: "Alors que les calottes glaciaires ont fondu et que la Terre est presque entièrement submergée, un marin qui a subi une mutation décide de combattre la famine et d'interdire les.", 
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20",
 },
 {
@@ -130,7 +130,7 @@ export const films = [
         annee_de_sortie: "2010",
         descriotion: "Un conte post-apocalyptique dans lequel un homme solitaire se bat à travers l'Amérique pour protéger un livre sacré qui détient les secrets de la sauvegarde de l'humanité",
         auteur: "Albert Hughes",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -139,7 +139,7 @@ export const films = [
         annee_de_sortie: "2014",
         descriotion: "Thomas est déposé dans une communauté de garçons après que sa mémoire a été effacée et découvre bientôt qu'ils sont tous pris au piège dans un labyrinthe. Il va devoir unir ses forces à celles de ces compagnons ",
         auteur: "Wes Ball",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "10",
 },
 {
@@ -148,7 +148,7 @@ export const films = [
         annee_de_sortie: "2021",
         descriotion: "Vingt ans après qu'une grippe dévastatrice a effondré la civilisation, une troupe d'acteurs nomades tente de maintenir la culture vivante tout en affrontant un culte mystérieux. Une œuvre post-apocalyptique lumineuse qui explore l'importance de l'art pour la survie de l'humanité.",
         auteur: "Patrick Somerville",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -157,7 +157,7 @@ export const films = [
         annee_de_sortie: "1995",
         descriotion: "En 2035, un prisonnier est envoyé dans le passé pour identifier l'origine d'un virus mortel ayant décimé l'humanité. Entre asile psychiatrique et paradoxes temporels, il tente de remonter la piste de l'armée des 12 singes.",
         auteur: "Terry Gilliam",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
 },
 {
@@ -166,7 +166,7 @@ export const films = [
         annee_de_sortie: "2014",
         descriotion: "Alors que la Terre se meurt, un groupe d'astronautes franchit un trou de ver pour trouver une nouvelle planète habitable. Un voyage spatial épique qui explore les limites de la physique, du temps et de l'amour paternel.",
         auteur: "Christopher Nolan",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "10",
 },
 {
@@ -175,7 +175,7 @@ export const films = [
         annee_de_sortie: "2008",
         descriotion: "Dans un futur où l'humanité est forcée de vivre sous terre, le jeune Simon découvre un petit robot qui lui permettra, aux côtés du flamboyant Kamina, de percer la surface pour défier le destin de l'univers",
         auteur: "Hiroyuki Imaishi",
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20",
 },
 {
@@ -184,7 +184,7 @@ export const films = [
         annee_de_sortie: "",
         descriotion: "Un programmeur découvre que sa réalité n'est qu'une simulation informatique créée par des machines pour asservir l'humanité. Il rejoint alors une rébellion pour briser ses chaînes numériques et devenir l'Élu",
         auteur: "Les Wachowski",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
 },
 {
@@ -192,7 +192,7 @@ export const films = [
         titre:"Terminator 2 judgment Day",
         descriotion: "n nouveau Terminator en métal liquide, plus avancé, est envoyé pour éliminer le jeune John Connor. Pour le protéger, la résistance renvoie un T-800 reprogrammé, déclenchant une course-poursuite explosive pour empêcher l'apocalypse",
         auteur: "1991",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "5",
 },
 {
@@ -201,7 +201,7 @@ export const films = [
         annee_de_sortie: "2002",
         descriotion: "Dans un laboratoire souterrain secret, un virus mortel s'échappe et transforme le personnel en zombies assoiffés de sang. Une unité d'élite doit infiltrer le complexe pour désactiver l'IA devenue incontrôlable et contenir l'épidémie.",
         auteur: "Paul W.S. Anderson",
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20",
 },
 {
@@ -210,7 +210,7 @@ export const films = [
         annee_de_sortie: "1998",
         descriotion: "Un jeune astronome découvre qu'une comète géante est sur une trajectoire de collision directe avec la Terre. Alors qu'une mission spatiale tente de la détruire, l'humanité se prépare au choc inévitable et à une possible extinction.",
         auteur: "Mimi Leder",
-        niveau_de_difficulte: "Difficile",
+        niveau_de_difficulter: "Difficile",
         points: "20",
 },
 {
@@ -219,7 +219,7 @@ export const films = [
         annee_de_sortie: "2002",
         descriotion: "Un homme se réveille d'un coma dans un Londres désert, 28 jours après la propagation d'un virus de la . Il doit s'allier à d'autres survivants pour échapper aux infectés et trouver un refuge militaire qui s'avère tout aussi dangereux",
         auteur: "Danny Boyle",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 },
 {
@@ -228,7 +228,7 @@ export const films = [
         annee_de_sortie: "2015",
         descriotion: "Dans un désert post-apocalyptique, Max s'allie à l'Impératrice Furiosa pour fuir un tyran et ses armées dans une course-poursuite infernale. Ensemble, ils tentent de traverser le désert à bord d'un camion-citerne pour atteindre une terre promise.",
         auteur: "George Miller",
-        niveau_de_difficulte: "Moyen",
+        niveau_de_difficulter: "Moyen",
         points: "15",
 },
 {
@@ -237,7 +237,7 @@ export const films = [
         annee_de_sortie: "1978",
         descriotion: "Alors qu'une épidémie de morts-vivants ravage les États-Unis, quatre survivants se barricadent dans un centre commercial. Ils tentent d'y recréer une vie normale tout en luttant contre les rôdeurs et une bande de pillards.",
         auteur: "George A. Romero",
-        niveau_de_difficulte: "Facile",
+        niveau_de_difficulter: "Facile",
         points: "5",
 },
 {
@@ -246,7 +246,7 @@ export const films = [
         annee_de_sortie: "2014",
         descriotion: "Un officier sans expérience de combat se retrouve coincé dans une boucle temporelle lors d'une invasion extraterrestre, revivant sans cesse la même bataille. À chaque mort, il devient plus fort et cherche avec une soldate d'élite le moyen de vaincre l'ennemi.",
         auteur: "Doug Liman",
-        niveau_de_difficulte: "Moyenn",
+        niveau_de_difficulter: "Moyenn",
         points: "15",
 },
 {
@@ -255,7 +255,7 @@ export const films = [
         annee_de_sortie: "2009",
         descriotion: "Un chercheur découvre que le noyau de la Terre surchauffe, provoquant des séismes et des tsunamis qui menacent de rayer l'humanité de la carte. Un père de famille tente désespérément de sauver les siens alors que le monde s'écroule littéralement autour d'eux.",
         auteur: "Roland Emmerich",
-        niveau_de_difficulte: "Evident",
+        niveau_de_difficulter: "Evident",
         points: "5",
 }
 ];
