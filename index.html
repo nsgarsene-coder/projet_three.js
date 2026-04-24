@@ -1,13 +1,137 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>projet_three.js</title>
+    <title>APOCALYPSE — Netflix × ThreeJS</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- ═══════════════════════════════════
+         LOADER — flèche de lumière
+    ════════════════════════════════════ -->
+    <div id="loader">
+      <div id="loader-fleche"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         PAGE ACCUEIL
+    ════════════════════════════════════ -->
+    <div id="accueil" class="hidden">
+      <video id="bg-video" autoplay loop muted playsinline>
+        <source src="/public/videos/apocalypse.mp4" type="video/mp4" />
+      </video>
+      <div id="bg-overlay"></div>
+
+      <div id="accueil-content">
+        <h1 id="logo">
+          <span class="logo-apo">APOCALYPSE</span>
+          <span class="logo-sub">Netflix × ThreeJS</span>
+        </h1>
+        <button id="btn-jouer">NOUVELLE PARTIE</button>
+        <div id="classement">
+          <h3>TOP 5</h3>
+          <ul id="classement-liste">
+            <li>— — —</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         TRANSITION — cercle qui se dilate
+    ════════════════════════════════════ -->
+    <div id="transition" class="hidden"></div>
+
+    <!-- ═══════════════════════════════════
+         JEU — bibliothèque 3D
+         (Three.js s'insère ici)
+    ════════════════════════════════════ -->
+    <div id="jeu" class="hidden">
+      <!-- HUD — infos de jeu -->
+      <div id="hud">
+        <div id="hud-score">
+          <span class="hud-label">SCORE</span>
+          <span id="score-value">0</span>
+        </div>
+        <div id="hud-timer">
+          <span class="hud-label">TEMPS</span>
+          <span id="timer-value">03:00</span>
+        </div>
+        <div id="hud-zone">
+          <span class="hud-label">ZONE</span>
+          <span id="zone-value">A</span>
+        </div>
+      </div>
+
+      <!-- Réticule FPS au centre -->
+      <div id="reticule">
+        <div class="ret-h"></div>
+        <div class="ret-v"></div>
+      </div>
+
+      <!-- Interface indice — apparaît quand on s'approche -->
+      <div id="interface-indice" class="hidden">
+        <div id="indice-grain"></div>
+        <p id="indice-texte"></p>
+        <button id="btn-fermer-indice">✕</button>
+      </div>
+
+      <!-- Interface réponse -->
+      <div id="interface-reponse" class="hidden">
+        <div id="reponse-grain"></div>
+        <p id="reponse-label">TAPE UN TITRE</p>
+        <input
+          id="input-reponse"
+          type="text"
+          placeholder="..."
+          autocomplete="off"
+        />
+        <div id="reponse-actions">
+          <button id="btn-valider">VALIDER</button>
+          <button id="btn-annuler">ANNULER</button>
+        </div>
+        <p id="reponse-feedback"></p>
+      </div>
+
+      <!-- Carte résultat — bonne réponse -->
+      <div id="carte-resultat" class="hidden">
+        <div id="carte-inner">
+          <img id="film-poster" src="" alt="" />
+          <div id="film-infos">
+            <h2 id="film-title"></h2>
+            <p id="film-year"></p>
+            <p id="film-synopsis"></p>
+            <p id="film-cast"></p>
+            <div id="film-score-badge">+<span id="film-points"></span> pts</div>
+          </div>
+        </div>
+        <button id="btn-continuer">CONTINUER</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         GAME OVER
+    ════════════════════════════════════ -->
+    <div id="game-over" class="hidden">
+      <div id="game-over-inner">
+        <h1>GAME OVER</h1>
+        <p id="game-over-score">Score final : <span id="go-score">0</span></p>
+        <button id="btn-rejouer">REJOUER</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VICTOIRE
+    ════════════════════════════════════ -->
+    <div id="victoire" class="hidden">
+      <div id="victoire-inner">
+        <h1>VOUS ÊTES SORTI</h1>
+        <p id="victoire-score">Score : <span id="v-score">0</span></p>
+        <button id="btn-rejouer-v">REJOUER</button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
