@@ -34,10 +34,7 @@ export const controls = new PointerLockControls(camera, document.body);
 let overlayActif = false;
 
 export function activerFPS() {
-  if (!overlayActif) {
-    overlayActif = true;
-    controls.lock();
-  }
+  controls.lock();
 }
 
 controls.addEventListener('lock', () => {
@@ -108,8 +105,6 @@ document.addEventListener('keyup', (e) => {
 const LIMITES = { minX: -13, maxX: 13, minZ: -19, maxZ: 19 };
 
 export function updateControls() {
-  if (!controls.isLocked) return;
-
   camera.getWorldDirection(direction);
   direction.y = 0;
   direction.normalize();
