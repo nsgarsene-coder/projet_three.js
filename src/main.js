@@ -1,3 +1,10 @@
+import {
+  lancerAmbiance,
+  jouerCorrect,
+  jouerWrong,
+  jouerGameover,
+  jouerVictoire,
+} from './sound.js';
 import './style.css';
 import gsap from 'gsap';
 import {
@@ -118,23 +125,36 @@ function initialiserJeu() {
   jeu.classList.remove('hidden');
   jeuActif = true;
 
-  // Hint clique pour activer FPS
-  const hint = document.createElement('div');
-  hint.id = 'fps-hint';
-  hint.textContent = 'CLIQUER POUR JOUER';
-  Object.assign(hint.style, {
-    position: 'fixed',
-    bottom: '3rem',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    fontFamily: "'Share Tech Mono', monospace",
-    fontSize: '0.8rem',
-    letterSpacing: '0.4em',
-    color: 'rgba(255,255,255,0.5)',
-    zIndex: '25',
-    animation: 't-pulse 1.5s infinite',
+  // ─── Overlay pour entrer en mode FPS ───
+  const btnEntrer = document.createElement('div');
+  btnEntrer.id = 'btn-entrer';
+  btnEntrer.innerHTML = `
+    <div id="entrer-inner">
+      <p>CLIQUER POUR ENTRER</p>
+      <p id="entrer-sub">WASD pour avancer · SOURIS pour regarder</p>
+    </div>
+  `;
+  document.body.appendChild(btnEntrer);
+
+  btnEntrer.addEventListener('click', () => {
+    controls.lock();
+    lancerAmbiance();
   });
-  document.body.appendChild(hint);
+
+  controls.addEventListener('lock', () => {
+    btnEntrer.classList.add('hidden');
+  });
+
+  controls.addEventListener('unlock', () => {
+    if (
+      jeuActif &&
+      interfaceReponse.classList.contains('hidden') &&
+      carteResultat.classList.contains('hidden')
+    ) {
+      btnEntrer.classList.remove('hidden');
+    }
+  });
+  // ────────────────────────────────────────
 
   const updateBiblio = buildBibliotheque();
   const updateLumiere = createLumieres();
@@ -146,14 +166,6 @@ function initialiserJeu() {
   startLoop();
   lancerTimer(180);
 }
-
-// Activer FPS au clic
-document.addEventListener('click', () => {
-  if (!jeuActif) return;
-  if (!interfaceReponse.classList.contains('hidden')) return;
-  if (!carteResultat.classList.contains('hidden')) return;
-  activerFPS();
-});
 
 // ─── TIMER ────────────────────────────
 function lancerTimer(secondes) {
@@ -276,6 +288,7 @@ function validerReponse() {
     scoreEl.textContent = score;
     interfaceReponse.classList.add('hidden');
     afficherCarteFilm(film);
+    jouerCorrect();
 
     // Griser le livre résolu
     livresFilms.forEach((livre) => {
@@ -289,6 +302,7 @@ function validerReponse() {
       setTimeout(declencherVictoire, 3000);
   } else {
     reponseFeedback.textContent = 'INCORRECT — RÉESSAIE';
+    jouerWrong();
     gsap.to('#input-reponse', {
       x: 8,
       duration: 0.05,
@@ -329,6 +343,7 @@ function declencherGameOver() {
   clearInterval(timerInterval);
   controls.unlock();
   goScore.textContent = score;
+  jouerGameover();
   gameOver.classList.remove('hidden');
   gsap.fromTo(
     '#game-over-inner',
@@ -343,6 +358,7 @@ function declencherVictoire() {
   clearInterval(timerInterval);
   controls.unlock();
   vScore.textContent = score;
+  jouerVictoire();
   victoire.classList.remove('hidden');
   gsap.fromTo(
     '#victoire-inner',
