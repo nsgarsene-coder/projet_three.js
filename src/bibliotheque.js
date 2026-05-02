@@ -1,3 +1,4 @@
+import { fetchToutesAffiches } from './tmdb.js';
 import * as THREE from 'three';
 import { scene, camera } from './scene.js';
 import { films } from '../data/films.js';
@@ -236,7 +237,7 @@ function remplirEtagere(x, z, rotY = 0) {
 // ═══════════════════════════════════════
 export const livresFilms = [];
 
-function createLivreFilm(film, x, y, z, rotY = 0) {
+function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   const couleurs = { easy: 0x8b0000, medium: 0x4a0e0e, hard: 0x1a0a0a };
   const mat = new THREE.MeshStandardMaterial({
     color: couleurs[film.difficulty] || 0x3d0000,
@@ -246,7 +247,7 @@ function createLivreFilm(film, x, y, z, rotY = 0) {
   });
 
   const livre = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.85, 0.32), mat);
-  livre.position.set(x, y, z);
+  livre.position.set(x, y + 0.35, z);
   livre.rotation.y = rotY;
   livre.castShadow = true;
   livre.userData = { filmId: film.id, estFilm: true };
@@ -353,48 +354,84 @@ function updateIndices() {
 // ═══════════════════════════════════════
 // BUILD COMPLET
 // ═══════════════════════════════════════
-export function buildBibliotheque() {
+export async function buildBibliotheque() {
   createSol();
   createStructure();
+
+  // Charger toutes les affiches TMDB
+  const affiches = await fetchToutesAffiches(films);
 
   const filmsA = films.filter((f) => f.zone === 'A');
   const filmsB = films.filter((f) => f.zone === 'B');
   const filmsC = films.filter((f) => f.zone === 'C');
 
-  // ── ZONE A — gauche ──
-  for (let z = -12; z <= 8; z += 5) {
+  // Niveaux des tablettes (hauteur tablette + demi-hauteur livre)
+  const NIVEAUX = [0.47, 1.42, 2.37, 3.32];
+
+  // ── ZONE A — couloir gauche ──
+  // Étagères à x=-8, livres collés sur la face avant (z légèrement en avant)
+  const etagereZ_A = [-12, -7, -2, 3, 8];
+  etagereZ_A.forEach((z) => {
     createEtagere(-8, z);
     remplirEtagere(-8, z);
-  }
-  filmsA.forEach((film, i) => {
-    const niveaux = [0.55, 1.5, 2.45, 3.35];
-    createLivreFilm(film, -7.55, niveaux[i % 4], -12 + i * 3.0);
-    createIndice(film, -5.5 + (i % 3), 0.3, -10 + i * 2.8);
   });
 
-  // ── ZONE B — centre ──
-  for (let z = -14; z <= 6; z += 6) {
+  filmsA.forEach((film, i) => {
+    // On place le livre sur l'étagère la plus proche de son index
+    const etagereIndex = Math.floor(i / 4);
+    const eZ = etagereZ_A[etagereIndex] || etagereZ_A[etagereZ_A.length - 1];
+    const niveau = NIVEAUX[i % 4];
+    // x = -8 (centre étagère) + decalage pour être sur la face avant
+    // La face avant de l'étagère est à z = eZ, profondeur D=0.45
+    // Livre à -8 (même x), z = eZ - 0.05 (face avant)
+    const offsetX = -1.0 + (i % 4) * 0.65; // répartir sur la largeur
+    createLivreFilm(film, -8 + offsetX, niveau, eZ - 0.05, affiches[film.id]);
+    createIndice(film, -6 + (i % 3) * 1.2, 0.25, eZ + 1.5);
+  });
+
+  // ── ZONE B — couloir central ──
+  const etagereZ_B = [-14, -8, -2, 4];
+  etagereZ_B.forEach((z) => {
     createEtagere(-2.2, z);
     createEtagere(2.2, z);
     remplirEtagere(-2.2, z);
     remplirEtagere(2.2, z);
-  }
-  filmsB.forEach((film, i) => {
-    const niveaux = [0.55, 1.5, 2.45, 3.35];
-    const cote = i % 2 === 0 ? -1.75 : 1.75;
-    createLivreFilm(film, cote, niveaux[i % 4], -14 + i * 3.2);
-    createIndice(film, (i % 4) * 0.7 - 1, 0.3, -12 + i * 2.8);
   });
 
-  // ── ZONE C — droite ──
-  for (let z = -14; z <= 10; z += 4) {
+  filmsB.forEach((film, i) => {
+    const etagereIndex = Math.floor(i / 4);
+    const eZ = etagereZ_B[etagereIndex] || etagereZ_B[etagereZ_B.length - 1];
+    const niveau = NIVEAUX[i % 4];
+    const offsetX = -1.0 + (i % 4) * 0.65;
+    // Alterner gauche (-2.2) et droite (2.2)
+    const coteX = i % 2 === 0 ? -2.2 : 2.2;
+    const faceZ = i % 2 === 0 ? eZ + 0.05 : eZ - 0.05;
+    createLivreFilm(
+      film,
+      coteX + offsetX * 0.4,
+      niveau,
+      faceZ,
+      affiches[film.id]
+    );
+    createIndice(film, (i % 3) * 0.8 - 0.8, 0.25, eZ + 1.2);
+  });
+
+  // ── ZONE C — couloir droit ──
+  const etagereZ_C = [
+    -14, -10, -6, -2, 2, 6, 10, 14, -18, 18, -22, 22, -26, 26, -28,
+  ];
+  etagereZ_C.forEach((z) => {
     createEtagere(8, z);
     remplirEtagere(8, z);
-  }
+  });
+
   filmsC.forEach((film, i) => {
-    const niveaux = [0.55, 1.5, 2.45, 3.35];
-    createLivreFilm(film, 7.55, niveaux[i % 4], -14 + i * 2.0);
-    createIndice(film, 5.5 + (i % 3) * 0.8, 0.3, -12 + i * 1.8);
+    const etagereIndex = Math.floor(i / 4);
+    const eZ = etagereZ_C[etagereIndex] || etagereZ_C[etagereZ_C.length - 1];
+    const niveau = NIVEAUX[i % 4];
+    const offsetX = -1.0 + (i % 4) * 0.65;
+    createLivreFilm(film, 8 + offsetX, niveau, eZ - 0.05, affiches[film.id]);
+    createIndice(film, 5.5 + (i % 3) * 0.8, 0.25, eZ + 1.2);
   });
 
   // ── Étagères murales déco ──
@@ -418,7 +455,6 @@ export function buildBibliotheque() {
   porte.userData.estSortie = true;
   scene.add(porte);
 
-  // Cadre de la porte
   const cadre = new THREE.Mesh(
     new THREE.BoxGeometry(2.0, 3.2, 0.08),
     new THREE.MeshStandardMaterial({ color: 0x2c1a0a, roughness: 0.8 })

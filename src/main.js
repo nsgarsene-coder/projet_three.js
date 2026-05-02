@@ -121,7 +121,7 @@ function lancerTransition() {
 }
 
 // ─── INIT JEU ─────────────────────────
-function initialiserJeu() {
+async function initialiserJeu() {
   jeu.classList.remove('hidden');
   jeuActif = true;
 
@@ -143,7 +143,7 @@ function initialiserJeu() {
   });
   // ────────────────────────────────────────
 
-  const updateBiblio = buildBibliotheque();
+  const updateBiblio = await buildBibliotheque();
   const updateLumiere = createLumieres();
 
   addToLoop(updateControls);
