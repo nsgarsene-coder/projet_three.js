@@ -137,22 +137,9 @@ function initialiserJeu() {
   document.body.appendChild(btnEntrer);
 
   btnEntrer.addEventListener('click', () => {
-    controls.lock();
+    activerFPS();
     lancerAmbiance();
-  });
-
-  controls.addEventListener('lock', () => {
     btnEntrer.classList.add('hidden');
-  });
-
-  controls.addEventListener('unlock', () => {
-    if (
-      jeuActif &&
-      interfaceReponse.classList.contains('hidden') &&
-      carteResultat.classList.contains('hidden')
-    ) {
-      btnEntrer.classList.remove('hidden');
-    }
   });
   // ────────────────────────────────────────
 
