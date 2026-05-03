@@ -251,7 +251,12 @@ function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   livre.rotation.y = rotY;
   livre.castShadow = true;
   livre.userData = { filmId: film.id, estFilm: true };
-
+  // Appliquer l'affiche si disponible
+  if (afficheUrl) {
+    const texture = new THREE.TextureLoader().load(afficheUrl);
+    livre.material.map = texture;
+    livre.material.needsUpdate = true;
+  }
   // Tranche rouge lumineuse
   const tranche = new THREE.Mesh(
     new THREE.BoxGeometry(0.016, 0.83, 0.3),
