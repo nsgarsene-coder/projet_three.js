@@ -6,6 +6,7 @@ import { films } from '../data/films.js';
 // ═══════════════════════════════════════
 // MATÉRIAUX
 // ═══════════════════════════════════════
+const GEO_LIVRE_DECO = new THREE.BoxGeometry(1, 1, 1);
 const matSol = new THREE.MeshStandardMaterial({
   color: 0x1a1008,
   roughness: 0.95,
@@ -212,13 +213,14 @@ function remplirEtagere(x, z, rotY = 0) {
       const lw = 0.07 + Math.random() * 0.07;
       const lh = 0.65 + Math.random() * 0.3;
       const livre = new THREE.Mesh(
-        new THREE.BoxGeometry(lw, lh, 0.32),
+        GEO_LIVRE_DECO,
         new THREE.MeshStandardMaterial({
           color:
             couleursLivres[Math.floor(Math.random() * couleursLivres.length)],
           roughness: 0.8,
         })
       );
+      livre.scale.set(lw, lh, 0.32);
       if (rotY === 0) livre.position.set(x + px, ny, z - 0.05);
       else {
         livre.position.set(x - 0.05, ny, z + px);
@@ -239,15 +241,13 @@ export const livresFilms = [];
 
 function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   const couleurs = { easy: 0x8b0000, medium: 0x4a0e0e, hard: 0x1a0a0a };
-  const mat = new THREE.MeshStandardMaterial({
+  const mat = new THREE.MeshBasicMaterial({
     color: couleurs[film.difficulty] || 0x3d0000,
-    roughness: 0.65,
-    emissive: new THREE.Color(couleurs[film.difficulty] || 0x3d0000),
-    emissiveIntensity: 0.12,
+    map: afficheUrl ? new THREE.TextureLoader().load(afficheUrl) : null,
   });
 
   const livre = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.85, 0.32), mat);
-  livre.position.set(x, y + 0.35, z);
+  livre.position.set(x, y, z);
   livre.rotation.y = rotY;
   livre.castShadow = true;
   livre.userData = { filmId: film.id, estFilm: true };
