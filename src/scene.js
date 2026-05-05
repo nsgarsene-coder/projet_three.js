@@ -157,32 +157,6 @@ export function updateControls() {
   // limites inchangées
 }
 
-export function updateControls() {
-  // Direction vers laquelle on regarde (axe Z local)
-  forward
-    .set(-Math.sin(yaw) * Math.cos(pitch), 0, -Math.cos(yaw) * Math.cos(pitch))
-    .normalize();
-
-  // Direction latérale (axe X local)
-  lateral.set(Math.cos(yaw), 0, -Math.sin(yaw)).normalize();
-
-  if (touches.forward) camera.position.addScaledVector(forward, VITESSE);
-  if (touches.backward) camera.position.addScaledVector(forward, -VITESSE);
-  if (touches.left) camera.position.addScaledVector(lateral, -VITESSE);
-  if (touches.right) camera.position.addScaledVector(lateral, VITESSE);
-
-  // Limites
-  camera.position.x = Math.max(
-    LIMITES.minX,
-    Math.min(LIMITES.maxX, camera.position.x)
-  );
-  camera.position.z = Math.max(
-    LIMITES.minZ,
-    Math.min(LIMITES.maxZ, camera.position.z)
-  );
-  camera.position.y = 1.7;
-}
-
 // ═══════════════════════════════════════
 // RESIZE
 // ═══════════════════════════════════════

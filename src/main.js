@@ -14,6 +14,8 @@ import {
   addToLoop,
   startLoop,
   activerFPS,
+  raycaster,
+  mouseCenter,
 } from './scene.js';
 import {
   buildBibliotheque,
@@ -56,7 +58,7 @@ let filmActuel = null;
 let filmsResolus = new Set();
 let jeuActif = false;
 let objetProche = null;
-
+``;
 // ─── LOADER ───────────────────────────
 function lancerLoader() {
   gsap.fromTo(
@@ -179,38 +181,79 @@ function detecterProximite() {
   if (!interfaceReponse.classList.contains('hidden')) return;
   if (!carteResultat.classList.contains('hidden')) return;
 
-  const pos = camera.position;
-  let plusProche = null;
-  let distMin = DISTANCE;
+  let cible = null;
 
-  objetsIndices.forEach((obj) => {
-    const d = pos.distanceTo(obj.position);
-    if (d < distMin) {
-      distMin = d;
-      plusProche = obj;
-    }
-  });
+  // 1️ Raycast depuis le centre de l'écran
+  raycaster.setFromCamera(mouseCenter, camera);
+  const objetsInteractifs = [
+    ...objetsIndices,
+    ...livresFilms.filter((l) => !filmsResolus.has(l.userData.filmId)),
+  ];
 
-  livresFilms.forEach((livre) => {
-    if (filmsResolus.has(livre.userData.filmId)) return;
-    const d = pos.distanceTo(livre.position);
-    if (d < distMin) {
-      distMin = d;
-      plusProche = livre;
-    }
-  });
+  const intersects = raycaster.intersectObjects(objetsInteractifs, false);
 
-  if (plusProche !== objetProche) {
-    objetProche = plusProche;
-    if (plusProche?.userData.estIndice) afficherIndice(plusProche);
-    else if (plusProche?.userData.estFilm) {
-      fermerIndice();
-      ouvrirReponse(plusProche.userData.filmId);
-    } else fermerIndice();
+  if (intersects.length > 0) {
+    cible = intersects[0].object;
+  } else {
+    // 2️ Fallback distance (ce que tu avais déjà)
+    const pos = camera.position;
+    let distMin = DISTANCE;
+
+    objetsIndices.forEach((obj) => {
+      const d = pos.distanceTo(obj.position);
+      if (d < distMin) {
+        distMin = d;
+        cible = obj;
+      }
+    });
+
+    livresFilms.forEach((livre) => {
+      if (filmsResolus.has(livre.userData.filmId)) return;
+      const d = pos.distanceTo(livre.position);
+      if (d < distMin) {
+        distMin = d;
+        cible = livre;
+      }
+    });
   }
 
+  // 3️ Changement de cible
+  if (cible !== objetProche) {
+    objetProche = cible;
+    if (cible?.userData.estIndice) afficherIndice(cible);
+    else if (cible?.userData.estFilm) {
+      fermerIndice();
+      ouvrirReponse(cible.userData.filmId);
+    } else {
+      fermerIndice();
+    }
+  }
+
+  // Zone
   const z = camera.position.z;
   zoneEl.textContent = z < -6 ? 'C' : z < 6 ? 'B' : 'A';
+  //  FEEDBACK VISUEL (hover FPS)
+  if (cible !== objetSurvole) {
+    // reset ancien
+    if (objetSurvole) {
+      objetSurvole.scale.set(1, 1, 1);
+
+      if (objetSurvole.material?.emissive) {
+        objetSurvole.material.emissiveIntensity = 0;
+      }
+    }
+
+    objetSurvole = cible;
+
+    // applique effet
+    if (objetSurvole) {
+      objetSurvole.scale.set(1.15, 1.15, 1.15);
+
+      if (objetSurvole.material?.emissive) {
+        objetSurvole.material.emissiveIntensity = 0.8;
+      }
+    }
+  }
 }
 
 // ─── INDICE ───────────────────────────
