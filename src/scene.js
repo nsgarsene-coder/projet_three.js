@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+export const raycaster = new THREE.Raycaster();
+export const mouseCenter = new THREE.Vector2(0, 0); // centre écran
 
 // ═══════════════════════════════════════
 // SCÈNE, CAMÉRA, RENDERER
@@ -38,8 +40,8 @@ let locked = false;
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 
 // Demande le pointer lock sur clic
-renderer.domElement.addEventListener('click', () => {
-  renderer.domElement.requestPointerLock();
+renderer.domElement.addEventListener('click', (e) => {
+  if (!locked) renderer.domElement.requestPointerLock();
 });
 
 document.addEventListener('pointerlockchange', () => {
@@ -139,6 +141,21 @@ document.addEventListener('keyup', (e) => {
 });
 
 const LIMITES = { minX: -13, maxX: 13, minZ: -21, maxZ: 19 };
+let lastTime = performance.now();
+
+export function updateControls() {
+  const now = performance.now();
+  const delta = (now - lastTime) / 16.666;
+  lastTime = now;
+
+  const speed = VITESSE * delta;
+  if (touches.forward) camera.position.addScaledVector(forward, speed);
+  if (touches.backward) camera.position.addScaledVector(forward, -speed);
+  if (touches.left) camera.position.addScaledVector(lateral, -speed);
+  if (touches.right) camera.position.addScaledVector(lateral, speed);
+
+  // limites inchangées
+}
 
 export function updateControls() {
   // Direction vers laquelle on regarde (axe Z local)
