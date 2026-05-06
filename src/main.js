@@ -8,6 +8,7 @@ import {
 import './style.css';
 import gsap from 'gsap';
 import {
+  scene,
   camera,
   controls,
   updateControls,
@@ -145,18 +146,38 @@ async function initialiserJeu() {
   });
   // ────────────────────────────────────────
 
-  const { updateBibliotheque, affiches } = await buildBibliotheque();
+  const updateBibliotheque = await buildBibliotheque();
+
   scene.traverse((obj) => {
     if (obj.userData.estSortie) {
       porteSortie = obj;
     }
   });
+
   const updateLumiere = createLumieres();
 
-  addToLoop(updateControls);
-  addToLoop(updateBibliotheque);
-  addToLoop(updateLumiere);
-  addToLoop(detecterProximite);
+  console.log('updateControls:', typeof updateControls);
+  console.log('updateBibliotheque:', typeof updateBibliotheque);
+  console.log('updateLumiere:', typeof updateLumiere);
+  console.log('detecterProximite:', typeof detecterProximite);
+
+  //  VERSION SÉCURISÉE
+  if (typeof updateControls === 'function') {
+    addToLoop(updateControls);
+  }
+
+  if (typeof updateBibliotheque === 'function') {
+    addToLoop(updateBibliotheque);
+  }
+
+  if (typeof updateLumiere === 'function') {
+    addToLoop(updateLumiere);
+  }
+
+  if (typeof detecterProximite === 'function') {
+    addToLoop(detecterProximite);
+  }
+
   startLoop();
   lancerTimer(180);
 }
@@ -218,6 +239,20 @@ function detecterProximite() {
 
   const z = camera.position.z;
   zoneEl.textContent = z < -6 ? 'C' : z < 6 ? 'B' : 'A';
+  if (porteSortie) {
+  const distanceSortie = camera.position.distanceTo(porteSortie.position);
+
+  if (distanceSortie < 2 && filmsResolus.size >= 3) {
+    declencherVictoire();
+  }
+}
+``
+if (distanceSortie < 3) {
+  porteSortie.material.emissiveIntensity = 1.5;
+} else {
+  porteSortie.material.emissiveIntensity = 0.4;
+}
+``
 }
 
 // ─── INDICE ───────────────────────────
@@ -298,7 +333,9 @@ function ouvrirReponse(filmId) {
 
   setTimeout(() => inputReponse.focus(), 100);
 }
-function creerFleche(position) {
+function creerFleche() {
+  if (!porteSortie) return;
+
   if (fleche) {
     scene.remove(fleche);
   }
@@ -311,8 +348,18 @@ function creerFleche(position) {
   });
 
   fleche = new THREE.Mesh(geo, mat);
-  fleche.position.set(position.x, 0.2, position.z);
-  fleche.rotation.x = Math.PI;
+
+  //  position = position joueur
+  fleche.position.set(camera.position.x, 0.2, camera.position.z);
+
+  //  calcul direction vers la sortie
+  const direction = new THREE.Vector3()
+    .subVectors(porteSortie.position, camera.position)
+    .normalize();
+
+  const angle = Math.atan2(direction.x, direction.z);
+
+  fleche.rotation.set(Math.PI, angle, 0);
 
   scene.add(fleche);
 
@@ -321,15 +368,6 @@ function creerFleche(position) {
     fleche = null;
   }, 5000);
 }
-
-gsap.fromTo(
-  '#interface-reponse',
-  { opacity: 0 },
-  { opacity: 1, duration: 0.4 }
-);
-
-setTimeout(() => inputReponse.focus(), 100);
-
 btnAnnuler.addEventListener('click', () => {
   interfaceReponse.classList.add('hidden');
   controls.lock();
@@ -347,7 +385,7 @@ function validerReponse() {
 
   if (checkAnswer(filmActuel, reponse)) {
     filmsResolus.add(filmActuel);
-    creerFleche(camera.position);
+    creerFleche();
     const film = getFilmById(filmActuel);
     score += film.points;
     scoreEl.textContent = score;
