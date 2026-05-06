@@ -239,11 +239,10 @@ export const livresFilms = [];
 
 function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   const couleurs = { easy: 0x8b0000, medium: 0x4a0e0e, hard: 0x1a0a0a };
+  //  même style que livres normaux (camouflage)
   const mat = new THREE.MeshStandardMaterial({
-    color: couleurs[film.difficulty] || 0x3d0000,
-    roughness: 0.65,
-    emissive: new THREE.Color(couleurs[film.difficulty] || 0x3d0000),
-    emissiveIntensity: 0.12,
+    color: couleursLivres[Math.floor(Math.random() * couleursLivres.length)],
+    roughness: 0.8,
   });
 
   const livre = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.85, 0.32), mat);
@@ -252,22 +251,22 @@ function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   livre.castShadow = true;
   livre.userData = { filmId: film.id, estFilm: true };
   // Appliquer l'affiche si disponible
-  if (afficheUrl) {
-    const texture = new THREE.TextureLoader().load(afficheUrl);
-    livre.material.map = texture;
-    livre.material.needsUpdate = true;
-  }
+  //if (afficheUrl) {
+  //const texture = new THREE.TextureLoader().load(afficheUrl);
+  //livre.material.map = texture;
+  // livre.material.needsUpdate = true;
+  //}
   // Tranche rouge lumineuse
-  const tranche = new THREE.Mesh(
-    new THREE.BoxGeometry(0.016, 0.83, 0.3),
-    new THREE.MeshStandardMaterial({
-      color: 0xff2200,
-      emissive: 0xff2200,
-      emissiveIntensity: 0.5,
-    })
-  );
-  tranche.position.set(0.065, 0, 0);
-  livre.add(tranche);
+  //const tranche = new THREE.Mesh(
+  // new THREE.BoxGeometry(0.016, 0.83, 0.3),
+  //new THREE.MeshStandardMaterial({
+  //color: 0xff2200,
+  //emissive: 0xff2200,
+  //emissiveIntensity: 0.5,
+  // })
+  // );
+  // tranche.position.set(0.065, 0, 0);
+  //livre.add(tranche);
 
   scene.add(livre);
   livresFilms.push(livre);
@@ -469,8 +468,25 @@ export async function buildBibliotheque() {
 
   const updatePoussiere = createPoussiere();
 
-  return function updateBibliotheque() {
+  return {
+  update: function () {
     updatePoussiere();
     updateIndices();
-  };
+  },
+  affiches
+};
+``
+``
 }
+export function revelerLivre(livre) {
+  if (!livre || !livre.userData.estFilm) return;
+
+  //  nouvelle apparence (visible)
+  livre.material.color.set(0xff3300);
+  livre.material.emissive = new THREE.Color(0xff2200);
+  livre.material.emissiveIntensity = 0.9;
+
+  //  marquer comme révélé
+  livre.userData.revele = true;
+}
+``

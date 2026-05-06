@@ -53,6 +53,7 @@ const btnRejouerV = document.getElementById('btn-rejouer-v');
 let score = 0;
 let timerInterval = null;
 let filmActuel = null;
+let fleche = null;
 let filmsResolus = new Set();
 let jeuActif = false;
 let objetProche = null;
@@ -143,11 +144,11 @@ async function initialiserJeu() {
   });
   // ────────────────────────────────────────
 
-  const updateBiblio = await buildBibliotheque();
+  const { updateBibliotheque, affiches } = await buildBibliotheque();
   const updateLumiere = createLumieres();
 
   addToLoop(updateControls);
-  addToLoop(updateBiblio);
+  addToLoop(update);
   addToLoop(updateLumiere);
   addToLoop(detecterProximite);
   startLoop();
@@ -240,18 +241,83 @@ btnFermerIndice.addEventListener('click', fermerIndice);
 // ─── RÉPONSE ──────────────────────────
 function ouvrirReponse(filmId) {
   if (filmsResolus.has(filmId)) return;
-  filmActuel = filmId;
-  controls.unlock();
-  interfaceReponse.classList.remove('hidden');
-  reponseFeedback.textContent = '';
-  inputReponse.value = '';
-  gsap.fromTo(
-    '#interface-reponse',
-    { opacity: 0 },
-    { opacity: 1, duration: 0.4 }
-  );
-  setTimeout(() => inputReponse.focus(), 100);
+
+  // révélation du livre
+  livresFilms.forEach((livre) => {
+    if (livre.userData.filmId === filmId && !livre.userData.revele) {
+      livre.material.color.set(0xff3300);
+      livre.material.emissive = new THREE.Color(0xff2200);
+      livre.material.emissiveIntensity = 0.8;
+
+      livre.userData.revele = true;
+
+      // AJOUT
+      setTimeout(() => {
+        const texture = new THREE.TextureLoader().load(affiches[filmId]);
+        livre.material.map = texture;
+        livre.material.needsUpdate = true;
+      }, 200);
+    }
+  });
+
+  livre.userData.revele = true;
+
+  // animation (avance + rotation)
+  const targetPosition = livre.position
+    .clone()
+    .add(new THREE.Vector3(0, 0, 0.3));
+
+  gsap.to(livre.position, {
+    x: targetPosition.x,
+    y: targetPosition.y,
+    z: targetPosition.z,
+    duration: 0.5,
+    ease: 'power2.out',
+  });
+
+  gsap.to(livre.rotation, {
+    y: livre.rotation.y + 0.5,
+    duration: 0.5,
+    ease: 'power2.out',
+  });
 }
+function creerFleche(position) {
+  if (fleche) {
+    scene.remove(fleche);
+  }
+
+  const geo = new THREE.ConeGeometry(0.2, 0.5, 8);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x00aaff,
+    emissive: 0x00aaff,
+    emissiveIntensity: 1,
+  });
+
+  fleche = new THREE.Mesh(geo, mat);
+  fleche.position.set(position.x, 0.2, position.z);
+  fleche.rotation.x = Math.PI;
+
+  scene.add(fleche);
+
+  setTimeout(() => {
+    scene.remove(fleche);
+    fleche = null;
+  }, 5000);
+}
+
+filmActuel = filmId;
+controls.unlock();
+interfaceReponse.classList.remove('hidden');
+reponseFeedback.textContent = '';
+inputReponse.value = '';
+
+gsap.fromTo(
+  '#interface-reponse',
+  { opacity: 0 },
+  { opacity: 1, duration: 0.4 }
+);
+
+setTimeout(() => inputReponse.focus(), 100);
 
 btnAnnuler.addEventListener('click', () => {
   interfaceReponse.classList.add('hidden');
@@ -270,6 +336,7 @@ function validerReponse() {
 
   if (checkAnswer(filmActuel, reponse)) {
     filmsResolus.add(filmActuel);
+    creerFleche(camera.position);
     const film = getFilmById(filmActuel);
     score += film.points;
     scoreEl.textContent = score;
