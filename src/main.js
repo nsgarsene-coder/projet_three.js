@@ -57,6 +57,7 @@ let fleche = null;
 let filmsResolus = new Set();
 let jeuActif = false;
 let objetProche = null;
+let porteSortie = null;
 
 // ─── LOADER ───────────────────────────
 function lancerLoader() {
@@ -145,10 +146,15 @@ async function initialiserJeu() {
   // ────────────────────────────────────────
 
   const { updateBibliotheque, affiches } = await buildBibliotheque();
+  scene.traverse((obj) => {
+    if (obj.userData.estSortie) {
+      porteSortie = obj;
+    }
+  });
   const updateLumiere = createLumieres();
 
   addToLoop(updateControls);
-  addToLoop(update);
+  addToLoop(updateBibliotheque);
   addToLoop(updateLumiere);
   addToLoop(detecterProximite);
   startLoop();
@@ -242,7 +248,7 @@ btnFermerIndice.addEventListener('click', fermerIndice);
 function ouvrirReponse(filmId) {
   if (filmsResolus.has(filmId)) return;
 
-  // révélation du livre
+  // révélation livre
   livresFilms.forEach((livre) => {
     if (livre.userData.filmId === filmId && !livre.userData.revele) {
       livre.material.color.set(0xff3300);
@@ -251,35 +257,46 @@ function ouvrirReponse(filmId) {
 
       livre.userData.revele = true;
 
-      // AJOUT
       setTimeout(() => {
         const texture = new THREE.TextureLoader().load(affiches[filmId]);
         livre.material.map = texture;
         livre.material.needsUpdate = true;
       }, 200);
+
+      const targetPosition = livre.position
+        .clone()
+        .add(new THREE.Vector3(0, 0, 0.3));
+
+      gsap.to(livre.position, {
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        duration: 0.5,
+        ease: 'power2.out',
+      });
+
+      gsap.to(livre.rotation, {
+        y: livre.rotation.y + 0.5,
+        duration: 0.5,
+        ease: 'power2.out',
+      });
     }
   });
 
-  livre.userData.revele = true;
+  //  UI
+  filmActuel = filmId;
+  controls.unlock();
+  interfaceReponse.classList.remove('hidden');
+  reponseFeedback.textContent = '';
+  inputReponse.value = '';
 
-  // animation (avance + rotation)
-  const targetPosition = livre.position
-    .clone()
-    .add(new THREE.Vector3(0, 0, 0.3));
+  gsap.fromTo(
+    '#interface-reponse',
+    { opacity: 0 },
+    { opacity: 1, duration: 0.4 }
+  );
 
-  gsap.to(livre.position, {
-    x: targetPosition.x,
-    y: targetPosition.y,
-    z: targetPosition.z,
-    duration: 0.5,
-    ease: 'power2.out',
-  });
-
-  gsap.to(livre.rotation, {
-    y: livre.rotation.y + 0.5,
-    duration: 0.5,
-    ease: 'power2.out',
-  });
+  setTimeout(() => inputReponse.focus(), 100);
 }
 function creerFleche(position) {
   if (fleche) {
@@ -304,12 +321,6 @@ function creerFleche(position) {
     fleche = null;
   }, 5000);
 }
-
-filmActuel = filmId;
-controls.unlock();
-interfaceReponse.classList.remove('hidden');
-reponseFeedback.textContent = '';
-inputReponse.value = '';
 
 gsap.fromTo(
   '#interface-reponse',
