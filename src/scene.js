@@ -34,6 +34,8 @@ document.body.appendChild(renderer.domElement);
 // ═══════════════════════════════════════
 let yaw = 0; // rotation horizontale
 let pitch = 0; // rotation verticale
+let targetYaw = 0;
+let targetPitch = 0;
 let locked = false;
 
 // Euler pour la rotation caméra
@@ -41,7 +43,10 @@ const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 
 // Demande le pointer lock sur clic
 renderer.domElement.addEventListener('click', (e) => {
-  if (!locked) renderer.domElement.requestPointerLock();
+  if (!locked) 
+renderer.domElement.requestPointerLock();
+
+  
 });
 
 document.addEventListener('pointerlockchange', () => {
@@ -53,16 +58,19 @@ document.addEventListener('pointerlockchange', () => {
 // Mouvement souris → rotation caméra
 document.addEventListener('mousemove', (e) => {
   if (!locked) return;
-  const sensitivity = 0.0018;
+  const sensitivity = 0.0024;
+``
   yaw -= e.movementX * sensitivity;
-  pitch -= e.movementY * sensitivity;
-  pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+pitch -= e.movementY * sensitivity;
+pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
   euler.set(pitch, yaw, 0);
   camera.quaternion.setFromEuler(euler);
 });
 
 export function activerFPS() {
-  renderer.domElement.requestPointerLock();
+  
+renderer.domElement.requestPointerLock();
+
 }
 
 export const controls = {
@@ -148,13 +156,42 @@ export function updateControls() {
   const delta = (now - lastTime) / 16.666;
   lastTime = now;
 
-  const speed = VITESSE * delta;
-  if (touches.forward) camera.position.addScaledVector(forward, speed);
-  if (touches.backward) camera.position.addScaledVector(forward, -speed);
-  if (touches.left) camera.position.addScaledVector(lateral, -speed);
-  if (touches.right) camera.position.addScaledVector(lateral, speed);
+  const speed = VITESSE;
 
-  // limites inchangées
+
+
+  //  2. RECALCUL DES DIRECTIONS
+  forward
+    .set(-Math.sin(yaw) * Math.cos(pitch), 0, -Math.cos(yaw) * Math.cos(pitch))
+    .normalize();
+
+  lateral.set(Math.cos(yaw), 0, -Math.sin(yaw)).normalize();
+  direction.set(0, 0, 0);
+
+if (touches.forward) direction.add(forward);
+if (touches.backward) direction.addScaledVector(forward, -1);
+if (touches.left) direction.addScaledVector(lateral, -1);
+if (touches.right) direction.add(lateral);
+
+// normalise pour éviter vitesse ×2 en diagonale
+direction.normalize();
+
+// déplacement
+camera.position.addScaledVector(direction, VITESSE);
+
+
+
+
+  //  4. LIMITES
+  camera.position.x = Math.max(
+    LIMITES.minX,
+    Math.min(LIMITES.maxX, camera.position.x)
+  );
+  camera.position.z = Math.max(
+    LIMITES.minZ,
+    Math.min(LIMITES.maxZ, camera.position.z)
+  );
+  camera.position.y = 1.7;
 }
 
 // ═══════════════════════════════════════

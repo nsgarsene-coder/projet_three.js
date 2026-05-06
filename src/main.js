@@ -58,6 +58,7 @@ let filmActuel = null;
 let filmsResolus = new Set();
 let jeuActif = false;
 let objetProche = null;
+let objetSurvole = null;
 ``;
 // ─── LOADER ───────────────────────────
 function lancerLoader() {
@@ -193,7 +194,12 @@ function detecterProximite() {
   const intersects = raycaster.intersectObjects(objetsInteractifs, false);
 
   if (intersects.length > 0) {
-    cible = intersects[0].object;
+    const hit = intersects[0];
+
+    //  distance limite (corrige ton bug)
+    if (hit.distance < 2) {
+      cible = hit.object;
+    }
   } else {
     // 2️ Fallback distance (ce que tu avais déjà)
     const pos = camera.position;
@@ -221,7 +227,7 @@ function detecterProximite() {
   if (cible !== objetProche) {
     objetProche = cible;
     if (cible?.userData.estIndice) afficherIndice(cible);
-    else if (cible?.userData.estFilm) {
+    else if (cible?.userData.estFilm && cible === objetProche) {
       fermerIndice();
       ouvrirReponse(cible.userData.filmId);
     } else {
