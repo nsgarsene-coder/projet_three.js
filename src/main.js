@@ -243,8 +243,13 @@ function detecterProximite() {
   const distanceSortie = camera.position.distanceTo(porteSortie.position);
 
   if (distanceSortie < 2 && filmsResolus.size >= 3) {
+  ouvrirPorte();
+
+  setTimeout(() => {
     declencherVictoire();
-  }
+  }, 1000);
+}
+
 }
 ``
 if (distanceSortie < 3) {
@@ -453,6 +458,15 @@ function declencherGameOver() {
     { scale: 0.8, opacity: 0 },
     { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(1.2)' }
   );
+}
+function ouvrirPorte() {
+  if (!porteSortie) return;
+
+  gsap.to(porteSortie.rotation, {
+    y: Math.PI / 2,
+    duration: 1,
+    ease: "power2.out"
+  });
 }
 
 // ─── VICTOIRE ─────────────────────────
