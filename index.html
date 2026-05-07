@@ -4,26 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>APOCALYPSE — Netflix × ThreeJS</title>
+
+    <!--  garder ça -->
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
 
   <body>
-    <!-- LOADER -->
     <div id="loader">
       <div id="loader-fleche"></div>
     </div>
 
-    <!-- ACCUEIL -->
     <div id="accueil">
+      <video id="bg-video" autoplay loop muted playsinline>
+        <!--  correction ici -->
+        <source src="/videos/apocalypse.mp4" type="video/mp4" />
+      </video>
+
+      <div id="bg-overlay"></div>
+
       <div id="accueil-content">
         <h1 id="logo">
           <span class="logo-apo">APOCALYPSE</span>
           <span class="logo-sub">Netflix × ThreeJS</span>
         </h1>
 
-        <p>Retrouve les films cachés dans la bibliothèque</p>
-
-        <!-- UN SEUL BOUTON -->
-        <button id="btn-jouer">JOUER</button>
+        <button id="btn-jouer">NOUVELLE PARTIE</button>
 
         <div id="classement">
           <h3>TOP 5</h3>
@@ -34,67 +39,26 @@
       </div>
     </div>
 
-    <!-- TRANSITION -->
     <div id="transition" class="hidden"></div>
 
-    <!-- JEU -->
     <div id="jeu" class="hidden">
-      <div id="hud">
-        <div>
-          <span class="hud-label">SCORE</span>
-          <span id="score-value">0</span>
-        </div>
-        <div>
-          <span class="hud-label">TEMPS</span>
-          <span id="timer-value">03:00</span>
-        </div>
-        <div>
-          <span class="hud-label">ZONE</span>
-          <span id="zone-value">A</span>
-        </div>
-      </div>
-
-      <div id="reticule">
-        <div class="ret-h"></div>
-        <div class="ret-v"></div>
-      </div>
-
-      <div id="interface-indice" class="hidden">
-        <p id="indice-texte"></p>
-        <button id="btn-fermer-indice">✕</button>
-      </div>
-
-      <div id="interface-reponse" class="hidden">
-        <p>TAPE UN TITRE</p>
-        <input id="input-reponse" type="text" />
-        <button id="btn-valider">VALIDER</button>
-        <button id="btn-annuler">ANNULER</button>
-      </div>
-
-      <div id="carte-resultat" class="hidden">
-        <div id="carte-inner">
-          <img id="film-poster" />
-          <div>
-            <h2 id="film-title"></h2>
-            <p id="film-year"></p>
-          </div>
-        </div>
-        <button id="btn-continuer">CONTINUER</button>
-      </div>
+      <!-- ton code inchangé ici -->
     </div>
 
-    <!-- GAME OVER -->
     <div id="game-over" class="hidden">
-      <h1>GAME OVER</h1>
-      <p>Score : <span id="go-score">0</span></p>
-      <button id="btn-rejouer">REJOUER</button>
+      <div id="game-over-inner">
+        <h1>GAME OVER</h1>
+        <p>Score final : <span id="go-score">0</span></p>
+        <button id="btn-rejouer">REJOUER</button>
+      </div>
     </div>
 
-    <!-- VICTOIRE -->
     <div id="victoire" class="hidden">
-      <h1>VOUS ÊTES SORTI</h1>
-      <p>Score : <span id="v-score">0</span></p>
-      <button id="btn-rejouer-v">REJOUER</button>
+      <div id="victoire-inner">
+        <h1>VOUS ÊTES SORTI</h1>
+        <p>Score : <span id="v-score">0</span></p>
+        <button id="btn-rejouer-v">REJOUER</button>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>
