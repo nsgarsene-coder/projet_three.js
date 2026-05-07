@@ -25,6 +25,11 @@ const sons = {
     src: ['/sounds/gameover.wav'],
     volume: 0.8,
   }),
+  victoire: new Howl({
+  src: ['/sounds/victory.wav'],
+  volume: 0.8,
+}),
+``
 };
 
 // ═══════════════════════════════════════
@@ -56,4 +61,5 @@ export function jouerGameover() {
 
 export function jouerVictoire() {
   stopAmbiance();
+  sons.victoire.play();
 }

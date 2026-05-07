@@ -31,7 +31,7 @@ const couleursLivres = [
 // LUMIÈRES
 // ═══════════════════════════════════════
 export function createLumieres() {
-  const ambiante = new THREE.AmbientLight(0xffeedd, 3.5);
+  const ambiante = new THREE.AmbientLight(0xffffff, 8);
   scene.add(ambiante);
 
   const positionsChandelles = [
@@ -47,7 +47,7 @@ export function createLumieres() {
 
   const chandelles = [];
   positionsChandelles.forEach(([x, y, z]) => {
-    const lumiere = new THREE.PointLight(0xffaa66, 5.0, 20);
+    const lumiere = new THREE.PointLight(0xffaa66, 15, 40);
     lumiere.position.set(x, y, z);
     lumiere.castShadow = false;
     scene.add(lumiere);
@@ -118,7 +118,8 @@ function createSol() {
     const pGeo = new THREE.PlaneGeometry(0.85, 44);
     const pMat = new THREE.MeshStandardMaterial({
       color: i % 2 === 0 ? 0x201408 : 0x160e06,
-      roughness: 0.95,
+      roughness: 0.6,
+      metalness: 0.1,
     });
     const planche = new THREE.Mesh(pGeo, pMat);
     planche.rotation.x = -Math.PI / 2;
@@ -216,7 +217,8 @@ function remplirEtagere(x, z, rotY = 0) {
         new THREE.MeshStandardMaterial({
           color:
             couleursLivres[Math.floor(Math.random() * couleursLivres.length)],
-          roughness: 0.8,
+          roughness: 0.5,
+          metalness: 0.1,
         })
       );
       if (rotY === 0) livre.position.set(x + px, ny, z - 0.05);
@@ -242,14 +244,15 @@ function createLivreFilm(film, x, y, z, afficheUrl = null, rotY = 0) {
   //  même style que livres normaux (camouflage)
   const mat = new THREE.MeshStandardMaterial({
     color: couleursLivres[Math.floor(Math.random() * couleursLivres.length)],
-    roughness: 0.8,
+    roughness: 0.5,
+    metalness: 0.2,
   });
-
   const livre = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.85, 0.32), mat);
   livre.position.set(x, y + 0.35, z);
   livre.rotation.y = rotY;
   livre.castShadow = true;
   livre.userData = { filmId: film.id, estFilm: true };
+  affiche: afficheUrl;
   // Appliquer l'affiche si disponible
   //if (afficheUrl) {
   //const texture = new THREE.TextureLoader().load(afficheUrl);
@@ -469,14 +472,13 @@ export async function buildBibliotheque() {
   const updatePoussiere = createPoussiere();
 
   return {
-  update: function () {
-    updatePoussiere();
-    updateIndices();
-  },
-  affiches
-};
-``
-``
+    update: function () {
+      updatePoussiere();
+      updateIndices();
+    },
+    affiches,
+  };
+  ````;
 }
 export function revelerLivre(livre) {
   if (!livre || !livre.userData.estFilm) return;
@@ -489,4 +491,4 @@ export function revelerLivre(livre) {
   //  marquer comme révélé
   livre.userData.revele = true;
 }
-``
+``;

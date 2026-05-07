@@ -1,66 +1,117 @@
 <!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>APOCALYPSE — Netflix × ThreeJS</title>
+<head><html lang="fr">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!--  garder ça -->
-    <link rel="stylesheet" href="/src/style.css" />
-  </head>
+  <title>CINÉLIBRIUM</title>
 
-  <body>
-    <div id="loader">
-      <div id="loader-fleche"></div>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════
+       LOADER
+  ═══════════════════════════════ -->
+  <div id="loader">
+    <div id="loader-fleche"></div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       ACCUEIL (AVEC VIDEO)
+  ═══════════════════════════════ -->
+  <div id="accueil">
+
+    <!--  vidéo en arrière-plan -->
+    <video id="bg-video" autoplay  loop playsinline>
+      <source src="src\vidéos\apocalypse.mp4" type="video/mp4">
+    </video>
+
+    <!-- overlay sombre -->
+    <div id="bg-overlay"></div>
+
+    <!-- contenu -->
+    <div id="accueil-content">
+      <h1 id="logo">
+        <span class="logo-apo">CINÉLIBRIUM</span>
+        <span class="logo-sub">APOCALYPSE</span>
+      </h1>
+
+      <button id="btn-jouer">ENTRER</button>
     </div>
+  </div>
 
-    <div id="accueil">
-      <video id="bg-video" autoplay loop muted playsinline>
-        <!--  correction ici -->
-        <source src="/videos/apocalypse.mp4" type="video/mp4" />
-      </video>
+  <!-- ═══════════════════════════════
+       TRANSITION
+  ═══════════════════════════════ -->
+  <div id="transition" class="hidden"></div>
 
-      <div id="bg-overlay"></div>
+  <!-- ═══════════════════════════════
+       JEU (SCÈNE 3D)
+  ═══════════════════════════════ -->
+  <div id="jeu" class="hidden">
 
-      <div id="accueil-content">
-        <h1 id="logo">
-          <span class="logo-apo">APOCALYPSE</span>
-          <span class="logo-sub">Netflix × ThreeJS</span>
-        </h1>
+    <!-- HUD minimal -->
+    <div id="hud">
+      <div>
+        <span>SCORE</span>
+        <span id="score-value">0</span>
+      </div>
 
-        <button id="btn-jouer">NOUVELLE PARTIE</button>
-
-        <div id="classement">
-          <h3>TOP 5</h3>
-          <ul id="classement-liste">
-            <li>— — —</li>
-          </ul>
-        </div>
+      <div>
+        <span>TEMPS</span>
+        <span id="timer-value">03:00</span>
       </div>
     </div>
 
-    <div id="transition" class="hidden"></div>
+    <!-- réticule FPS -->
+    <div id="reticule"></div>
 
-    <div id="jeu" class="hidden">
-      <!-- ton code inchangé ici -->
-    </div>
+  </div>
 
-    <div id="game-over" class="hidden">
-      <div id="game-over-inner">
-        <h1>GAME OVER</h1>
-        <p>Score final : <span id="go-score">0</span></p>
-        <button id="btn-rejouer">REJOUER</button>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════
+       INTERFACE INDICE
+  ═══════════════════════════════ -->
+  <div id="interface-indice" class="hidden">
+    <p id="indice-texte"></p>
+  </div>
 
-    <div id="victoire" class="hidden">
-      <div id="victoire-inner">
-        <h1>VOUS ÊTES SORTI</h1>
-        <p>Score : <span id="v-score">0</span></p>
-        <button id="btn-rejouer-v">REJOUER</button>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════
+       INTERFACE RÉPONSE
+  ═══════════════════════════════ -->
+  <div id="interface-reponse" class="hidden">
+    <p>TAPE LE NOM DU FILM</p>
+    <input id="input-reponse" type="text" />
+    <button id="btn-valider">VALIDER</button>
+  </div>
 
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  <!-- ═══════════════════════════════
+       CARTE FILM (APRÈS RÉUSSITE)
+  ═══════════════════════════════ -->
+  <div id="carte-resultat" class="hidden">
+    <h2 id="film-title"></h2>
+    <button id="btn-continuer">CONTINUER</button>
+  </div>
+
+  <!-- ═══════════════════════════════
+       GAME OVER
+  ═══════════════════════════════ -->
+  <div id="game-over" class="hidden">
+    <h1>GAME OVER</h1>
+    <button id="btn-rejouer">REJOUER</button>
+  </div>
+
+  <!-- ═══════════════════════════════
+       VICTOIRE
+  ═══════════════════════════════ -->
+  <div id="victoire" class="hidden">
+    <h1>VOUS ÊTES SORTI</h1>
+    <button id="btn-rejouer-v">REJOUER</button>
+  </div>
+
+  <!-- JS -->
+  <script type="module" src="/src/main.js"></script>
+
+</body>
 </html>

@@ -1,193 +1,157 @@
 import * as THREE from 'three';
 
-// ═══════════════════════════════════════
-// SCÈNE, CAMÉRA, RENDERER
-// ═══════════════════════════════════════
+// ─────────────────────────────
+// SCENE
+// ─────────────────────────────
 export const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0605);
-scene.fog = new THREE.FogExp2(0x0a0605, 0.022);
+scene.background = new THREE.Color(0x000000);
 
+// ─────────────────────────────
+// CAMERA
+// ─────────────────────────────
 export const camera = new THREE.PerspectiveCamera(
-  80,
+  75,
   window.innerWidth / window.innerHeight,
   0.1,
-  80
+  1000
 );
-camera.position.set(0, 1.7, 10);
+camera.position.set(0, 1.6, 5);
 
-export const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  powerPreference: 'high-performance',
-});
+// ─────────────────────────────
+// RENDERER
+// ─────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-renderer.shadowMap.enabled = false; // désactivé pour les perfs
+document.body.appendChild(renderer.domElement);
+renderer.shadowMap.enabled = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 2.8;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.8;
-document.body.appendChild(renderer.domElement);
 
-// ═══════════════════════════════════════
-// SYSTÈME DE CAMÉRA FPS MANUEL
-// Pas de PointerLockControls — contrôle total
-// ═══════════════════════════════════════
-let yaw = 0; // rotation horizontale
-let pitch = 0; // rotation verticale
-let locked = false;
+// ─────────────────────────────
+// LIGHT
+// ─────────────────────────────
+const light = new THREE.HemisphereLight(0xffffff, 0x222222, 0.8);
+scene.add(light);
 
-// Euler pour la rotation caméra
-const euler = new THREE.Euler(0, 0, 0, 'YXZ');
+const dirLight = new THREE.DirectionalLight(0xffaa66, 1.2);
+dirLight.position.set(5, 10, 5);
+scene.add(dirLight);
 
-// Demande le pointer lock sur clic
-renderer.domElement.addEventListener('click', () => {
-  renderer.domElement.requestPointerLock();
-});
+const fill = new THREE.PointLight(0xffffff, 1.5, 100);
+fill.position.set(0, 10, 0);
+scene.add(fill);
+const ambiante = new THREE.AmbientLight(0xffffff, 6);
 
-document.addEventListener('pointerlockchange', () => {
-  locked = document.pointerLockElement === renderer.domElement;
-  const ret = document.getElementById('reticule');
-  if (ret) ret.style.opacity = locked ? '1' : '0.4';
-});
+const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambient);
 
-// Mouvement souris → rotation caméra
-document.addEventListener('mousemove', (e) => {
-  if (!locked) return;
-  const sensitivity = 0.0018;
-  yaw -= e.movementX * sensitivity;
-  pitch -= e.movementY * sensitivity;
-  pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
-  euler.set(pitch, yaw, 0);
-  camera.quaternion.setFromEuler(euler);
-});
+// ─────────────────────────────
+// SOL TEST
+// ─────────────────────────────
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(50, 50),
+  new THREE.MeshStandardMaterial({ color: 0x111111 })
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
 
-export function activerFPS() {
-  renderer.domElement.requestPointerLock();
-}
+// ─────────────────────────────
+// CONTROLES FPS (basique)
+// ─────────────────────────────
+let pitch = 0;
+let yaw = 0;
 
-export const controls = {
-  lock: () => renderer.domElement.requestPointerLock(),
-  unlock: () => document.exitPointerLock(),
-  isLocked: () => locked,
-  addEventListener: (event, fn) => {
-    if (event === 'lock')
-      document.addEventListener('pointerlockchange', () => {
-        if (locked) fn();
-      });
-    if (event === 'unlock')
-      document.addEventListener('pointerlockchange', () => {
-        if (!locked) fn();
-      });
-  },
-};
-
-scene.add(camera);
-
-// ═══════════════════════════════════════
-// DÉPLACEMENT WASD — TOUTES DIRECTIONS
-// ═══════════════════════════════════════
-const touches = {
+const keys = {
   forward: false,
   backward: false,
   left: false,
   right: false,
 };
 
-const VITESSE = 0.07;
-const direction = new THREE.Vector3();
-const lateral = new THREE.Vector3();
-const forward = new THREE.Vector3();
+// souris
+document.addEventListener('mousemove', (e) => {
+  if (!isLocked) return;
 
+  yaw -= e.movementX * 0.002;
+  pitch -= e.movementY * 0.002;
+
+  pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+
+  camera.rotation.set(pitch, yaw, 0);
+});
+
+// clavier
 document.addEventListener('keydown', (e) => {
-  switch (e.code) {
-    case 'KeyW':
-    case 'ArrowUp':
-      touches.forward = true;
-      break;
-    case 'KeyS':
-    case 'ArrowDown':
-      touches.backward = true;
-      break;
-    case 'KeyA':
-    case 'ArrowLeft':
-      touches.left = true;
-      break;
-    case 'KeyD':
-    case 'ArrowRight':
-      touches.right = true;
-      break;
-  }
+  if (e.key === 'z') keys.forward = true;
+  if (e.key === 's') keys.backward = true;
+  if (e.key === 'q') keys.left = true;
+  if (e.key === 'd') keys.right = true;
 });
 
 document.addEventListener('keyup', (e) => {
-  switch (e.code) {
-    case 'KeyW':
-    case 'ArrowUp':
-      touches.forward = false;
-      break;
-    case 'KeyS':
-    case 'ArrowDown':
-      touches.backward = false;
-      break;
-    case 'KeyA':
-    case 'ArrowLeft':
-      touches.left = false;
-      break;
-    case 'KeyD':
-    case 'ArrowRight':
-      touches.right = false;
-      break;
-  }
+  if (e.key === 'z') keys.forward = false;
+  if (e.key === 's') keys.backward = false;
+  if (e.key === 'q') keys.left = false;
+  if (e.key === 'd') keys.right = false;
 });
 
-const LIMITES = { minX: -13, maxX: 13, minZ: -21, maxZ: 19 };
+// ─────────────────────────────
+// POINTER LOCK
+// ─────────────────────────────
+let isLocked = false;
 
-export function updateControls() {
-  // Direction vers laquelle on regarde (axe Z local)
-  forward
-    .set(-Math.sin(yaw) * Math.cos(pitch), 0, -Math.cos(yaw) * Math.cos(pitch))
-    .normalize();
-
-  // Direction latérale (axe X local)
-  lateral.set(Math.cos(yaw), 0, -Math.sin(yaw)).normalize();
-
-  if (touches.forward) camera.position.addScaledVector(forward, VITESSE);
-  if (touches.backward) camera.position.addScaledVector(forward, -VITESSE);
-  if (touches.left) camera.position.addScaledVector(lateral, -VITESSE);
-  if (touches.right) camera.position.addScaledVector(lateral, VITESSE);
-
-  // Limites
-  camera.position.x = Math.max(
-    LIMITES.minX,
-    Math.min(LIMITES.maxX, camera.position.x)
-  );
-  camera.position.z = Math.max(
-    LIMITES.minZ,
-    Math.min(LIMITES.maxZ, camera.position.z)
-  );
-  camera.position.y = 1.7;
+export function activerFPS() {
+  document.body.requestPointerLock();
 }
 
-// ═══════════════════════════════════════
+document.addEventListener('pointerlockchange', () => {
+  isLocked = document.pointerLockElement === document.body;
+});
+
+// ─────────────────────────────
+// UPDATE LOOP
+// ─────────────────────────────
+const speed = 0.08;
+
+function updateMovement() {
+  if (!isLocked) return;
+
+  const direction = new THREE.Vector3();
+
+  if (keys.forward) direction.z -= 1;
+  if (keys.backward) direction.z += 1;
+  if (keys.left) direction.x -= 1;
+  if (keys.right) direction.x += 1;
+
+  direction.normalize();
+
+  const forward = new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation);
+  const right = new THREE.Vector3(1, 0, 0).applyEuler(camera.rotation);
+
+  camera.position.add(forward.multiplyScalar(direction.z * speed));
+  camera.position.add(right.multiplyScalar(direction.x * speed));
+}
+
+// ─────────────────────────────
+// LOOP
+// ─────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+
+  updateMovement();
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// ─────────────────────────────
 // RESIZE
-// ═══════════════════════════════════════
+// ─────────────────────────────
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-// ═══════════════════════════════════════
-// BOUCLE ANIMATE
-// ═══════════════════════════════════════
-const callbacks = [];
-export function addToLoop(fn) {
-  callbacks.push(fn);
-}
-
-export function startLoop() {
-  function animate() {
-    requestAnimationFrame(animate);
-    callbacks.forEach((fn) => fn());
-    renderer.render(scene, camera);
-  }
-  animate();
-}

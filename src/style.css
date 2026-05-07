@@ -1,19 +1,53 @@
-/* ═══════════════════════════════════════
-   ACCUEIL (FIX CLEAN)
-════════════════════════════════════════ */
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  color: white;
+}
+
+/* UTILES */
+.hidden {
+  display: none !important;
+}
+
+/* CANVAS THREE */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* ═══════════════════════
+   LOADER
+═══════════════════════ */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 1000;
+}
+
+/* ═══════════════════════
+   ACCUEIL (VIDÉO)
+═══════════════════════ */
 #accueil {
   position: fixed;
   inset: 0;
-  z-index: 10;
-
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: radial-gradient(circle at center, #0a0a0a, #000000);
 }
 
-/* background vidéo */
+/* vidéo */
 #bg-video {
   position: absolute;
   inset: 0;
@@ -21,126 +55,107 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  filter: saturate(0.65) brightness(0.55);
 }
 
+/* overlay sombre */
 #bg-overlay {
   position: absolute;
   inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1;
-  background:
-    linear-gradient(to bottom,
-      rgba(5, 5, 5, 0.75) 0%,
-      transparent 25%,
-      transparent 75%,
-      rgba(5, 5, 5, 0.92) 100%),
-    rgba(5, 5, 5, 0.35);
 }
 
-/* contenu central */
+/* contenu */
 #accueil-content {
   position: relative;
   z-index: 2;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
-
-  padding: 50px;
-  border-radius: 20px;
-
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(14px);
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
-
   text-align: center;
 }
 
 /* titre */
-.logo-apo {
-  font-family: var(--font-titre);
-  font-size: clamp(5rem, 12vw, 10rem);
-  letter-spacing: 0.1em;
-  color: var(--blanc);
-
-  text-shadow:
-    0 0 20px var(--rouge-glow),
-    0 0 60px var(--rouge-glow);
-
-  animation: glitch 7s infinite;
+#logo {
+  margin-bottom: 2rem;
 }
 
-/* sous-texte */
-#accueil p {
+.logo-apo {
+  font-size: 3rem;
+}
+
+.logo-sub {
+  font-size: 1rem;
   opacity: 0.6;
 }
 
-/*  BOUTON PROPRE UNIQUE */
+/* bouton */
 #btn-jouer {
-  display: inline-block;
-
-  padding: 1rem 4rem;
-
-  background: var(--rouge);
-  /*  visible direct */
-  color: white;
-
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
   border: none;
-
-  font-family: var(--font-titre);
-  font-size: 1.5rem;
-  letter-spacing: 0.4em;
-
+  background: red;
+  color: white;
   cursor: pointer;
-
-  box-shadow: 0 0 20px var(--rouge-glow);
-
-  transition: all 0.3s;
 }
 
+/* ═══════════════════════
+   TRANSITION
+═══════════════════════ */
+#transition {
+  position: fixed;
+  width: 100vmax;
+  height: 100vmax;
+  top: 50%;
+  left: 50%;
+  background: black;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  z-index: 200;
+}
+
+/* ═══════════════════════
+   JEU
+═══════════════════════ */
 #jeu {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 5;
 }
 
-#accueil {
-  z-index: 100;
+/* HUD */
+#hud {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 50px;
+  z-index: 10;
 }
 
+/* réticule */
+#reticule {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: red;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
 
-/* effet hover */
-#btn-jouer::before {
-  content: '';
-  position: absolute;
+/* ═══════════════════════
+   INTERFACES
+═══════════════════════ */
+#interface-indice,
+#interface-reponse,
+#carte-resultat,
+#game-over,
+#victoire {
+  position: fixed;
   inset: 0;
-
-  background: var(--rouge);
-
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s;
-
-  z-index: -1;
-}
-
-#btn-jouer:hover::before {
-  transform: scaleX(1);
-}
-
-#btn-jouer:hover {
-  box-shadow:
-    0 0 25px var(--rouge-glow),
-    0 0 60px var(--rouge-glow);
-
-  letter-spacing: 0.55em;
-}
-
-
-#btn-jouer:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 40px var(--rouge-glow);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
 }
