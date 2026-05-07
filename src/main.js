@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import {
   lancerAmbiance,
   jouerCorrect,
@@ -59,6 +60,14 @@ let filmsResolus = new Set();
 let jeuActif = false;
 let objetProche = null;
 let porteSortie = null;
+let dernierBruit = 0;
+document.getElementById('jeu').classList.add('hidden');
+document.getElementById('game-over').classList.add('hidden');
+document.getElementById('victoire').classList.add('hidden');
+document.getElementById('interface-reponse').classList.add('hidden');
+document.getElementById('carte-resultat').classList.add('hidden');
+
+``;
 
 // ─── LOADER ───────────────────────────
 function lancerLoader() {
@@ -86,14 +95,37 @@ function lancerLoader() {
 // ─── ACCUEIL ──────────────────────────
 function afficherAccueil() {
   accueil.classList.remove('hidden');
-  gsap.fromTo(
-    '#accueil-content',
-    { y: 50, opacity: 0 },
-    { y: 0, opacity: 1, duration: 1.2, ease: 'power2.out' }
-  );
+
+  gsap.from('#accueil-content', {
+    opacity: 0,
+    y: 50,
+    duration: 1,
+    ease: 'power2.out',
+  });
+
+  gsap.from('#btn-jouer', {
+    scale: 0.8,
+    opacity: 0,
+    delay: 0.3,
+    duration: 0.8,
+    ease: 'back.out(1.7)',
+  });
 }
 
 btnJouer.addEventListener('click', lancerTransition);
+document.getElementById('btn-jouer').addEventListener('mouseenter', () => {
+  gsap.to('#btn-jouer', {
+    scale: 1.1,
+    duration: 0.2,
+  });
+});
+
+document.getElementById('btn-jouer').addEventListener('mouseleave', () => {
+  gsap.to('#btn-jouer', {
+    scale: 1,
+    duration: 0.2,
+  });
+});
 
 // ─── TRANSITION ───────────────────────
 function lancerTransition() {
@@ -110,15 +142,22 @@ function lancerTransition() {
     scale: 3,
     duration: 1.0,
     ease: 'power2.inOut',
+
     onComplete: () => {
-      accueil.classList.add('hidden');
+      document.getElementById('accueil').classList.add('hidden');
+
+      const jeu = document.getElementById('jeu');
+      jeu.classList.remove('hidden');
+
+      // nettoyer les autres UI
+      document.getElementById('game-over').classList.add('hidden');
+      document.getElementById('victoire').classList.add('hidden');
+      document.getElementById('carte-resultat').classList.add('hidden');
+
       initialiserJeu();
-      gsap.to(transition, {
-        opacity: 0,
-        duration: 0.4,
-        delay: 0.2,
-        onComplete: () => transition.classList.add('hidden'),
-      });
+
+      activerFPS();
+      lancerAmbiance();
     },
   });
 }
@@ -126,27 +165,12 @@ function lancerTransition() {
 // ─── INIT JEU ─────────────────────────
 async function initialiserJeu() {
   jeu.classList.remove('hidden');
-  jeuActif = true;
 
-  // ─── Overlay pour entrer en mode FPS ───
-  const btnEntrer = document.createElement('div');
-  btnEntrer.id = 'btn-entrer';
-  btnEntrer.innerHTML = `
-    <div id="entrer-inner">
-      <p>CLIQUER POUR ENTRER</p>
-      <p id="entrer-sub">WASD pour avancer · SOURIS pour regarder</p>
-    </div>
-  `;
-  document.body.appendChild(btnEntrer);
+  const result = await buildBibliotheque();
+  const updateBibliotheque = result.updateBibliotheque;
 
-  btnEntrer.addEventListener('click', () => {
-    activerFPS();
-    lancerAmbiance();
-    btnEntrer.classList.add('hidden');
-  });
-  // ────────────────────────────────────────
-
-  const updateBibliotheque = await buildBibliotheque();
+  console.log('updateBibliotheque:', updateBibliotheque);
+  console.log('type:', typeof updateBibliotheque);
 
   scene.traverse((obj) => {
     if (obj.userData.estSortie) {
@@ -156,29 +180,16 @@ async function initialiserJeu() {
 
   const updateLumiere = createLumieres();
 
-  console.log('updateControls:', typeof updateControls);
-  console.log('updateBibliotheque:', typeof updateBibliotheque);
-  console.log('updateLumiere:', typeof updateLumiere);
-  console.log('detecterProximite:', typeof detecterProximite);
-
-  //  VERSION SÉCURISÉE
-  if (typeof updateControls === 'function') {
-    addToLoop(updateControls);
-  }
-
-  if (typeof updateBibliotheque === 'function') {
-    addToLoop(updateBibliotheque);
-  }
-
-  if (typeof updateLumiere === 'function') {
-    addToLoop(updateLumiere);
-  }
-
-  if (typeof detecterProximite === 'function') {
-    addToLoop(detecterProximite);
-  }
-
+  if (typeof updateControls === 'function') addToLoop(updateControls);
+  if (typeof updateBibliotheque === 'function') addToLoop(updateBibliotheque);
+  if (typeof updateLumiere === 'function') addToLoop(updateLumiere);
+  if (typeof detecterProximite === 'function') addToLoop(detecterProximite);
+  if (typeof respirationCamera === 'function') addToLoop(respirationCamera);
   startLoop();
+
+  // ❗ IMPORTANT
+  jeuActif = true;
+
   lancerTimer(180);
 }
 
@@ -194,12 +205,21 @@ function lancerTimer(secondes) {
     if (restant <= 30) timerEl.classList.add('urgent');
     if (restant <= 0) {
       clearInterval(timerInterval);
-      declencherGameOver();
+
+      const random = Math.random();
+
+      if (random < 0.33) {
+        effetChute();
+      } else if (random < 0.66) {
+        effetEtagere();
+      } else {
+        effetNoir();
+      }
     }
   }, 1000);
 }
 
-// ─── DÉTECTION PROXIMITÉ ──────────────
+// DÉTECTION PROXIMITÉ
 const DISTANCE = 2.5;
 
 function detecterProximite() {
@@ -240,24 +260,24 @@ function detecterProximite() {
   const z = camera.position.z;
   zoneEl.textContent = z < -6 ? 'C' : z < 6 ? 'B' : 'A';
   if (porteSortie) {
-  const distanceSortie = camera.position.distanceTo(porteSortie.position);
+    const distanceSortie = camera.position.distanceTo(porteSortie.position);
 
-  if (distanceSortie < 2 && filmsResolus.size >= 3) {
-  ouvrirPorte();
+    //  ouverture + victoire
+    if (distanceSortie < 2 && filmsResolus.size >= 3) {
+      ouvrirPorte();
 
-  setTimeout(() => {
-    declencherVictoire();
-  }, 1000);
-}
+      setTimeout(() => {
+        declencherVictoire();
+      }, 1000);
+    }
 
-}
-``
-if (distanceSortie < 3) {
-  porteSortie.material.emissiveIntensity = 1.5;
-} else {
-  porteSortie.material.emissiveIntensity = 0.4;
-}
-``
+    //  effet lumière
+    if (distanceSortie < 3) {
+      porteSortie.material.emissiveIntensity = 1.5;
+    } else {
+      porteSortie.material.emissiveIntensity = 0.4;
+    }
+  }
 }
 
 // ─── INDICE ───────────────────────────
@@ -465,10 +485,150 @@ function ouvrirPorte() {
   gsap.to(porteSortie.rotation, {
     y: Math.PI / 2,
     duration: 1,
-    ease: "power2.out"
+    ease: 'power2.out',
+  });
+}
+function effetChute() {
+  gsap.to(camera.position, {
+    y: -10,
+    duration: 1.5,
+    ease: 'power2.in',
+    onComplete: () => {
+      declencherGameOver();
+    },
+  });
+}
+function effetEtagere() {
+  const geo = new THREE.BoxGeometry(3, 4, 0.5);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x3d2010 });
+
+  const etagere = new THREE.Mesh(geo, mat);
+
+  // au-dessus du joueur
+  etagere.position.set(camera.position.x, 6, camera.position.z);
+
+  scene.add(etagere);
+
+  gsap.to(etagere.position, {
+    y: 0,
+    duration: 0.7,
+    ease: 'power2.in',
+    onComplete: () => {
+      declencherGameOver();
+    },
+  });
+}
+function effetNoir() {
+  gsap.to(document.body, {
+    backgroundColor: 'black',
+    duration: 0.5,
+    onComplete: () => {
+      declencherGameOver();
+    },
   });
 }
 
+function evenementAleatoire() {
+  const random = Math.random();
+
+  if (random < 0.15) {
+    // declencherBruit();
+  } else if (random < 0.3) {
+    // objetRapide();
+  } else if (random < 0.4) {
+    //ombreRapide(); //  AJOUT
+  }
+}
+
+function declencherBruit() {
+  const maintenant = Date.now();
+
+  // limite : 3 secondes entre sons
+  if (maintenant - dernierBruit < 3000) return;
+
+  dernierBruit = maintenant;
+
+  const sons = [
+    new Audio('/sounds/bruit1.mp3'),
+    new Audio('/sounds/bruit2.mp3'),
+    new Audio('/sounds/chuchotement.mp3'),
+  ];
+
+  const son = sons[Math.floor(Math.random() * sons.length)];
+
+  const distance = Math.random() * 10;
+
+  son.volume = Math.max(0.05, 0.4 - distance / 12);
+  son.play();
+
+  // 🎮 effet caméra
+  gsap.to(camera.position, {
+    z: camera.position.z - 0.1,
+    duration: 0.1,
+    yoyo: true,
+    repeat: 1,
+  });
+}
+function objetRapide() {
+  const geo = new THREE.BoxGeometry(0.2, 0.5, 0.2);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x111111,
+    emissive: 0x222222,
+    emissiveIntensity: 0.5,
+  });
+
+  const objet = new THREE.Mesh(geo, mat);
+
+  // position côté gauche du joueur
+  objet.position.set(
+    camera.position.x - 2,
+    camera.position.y,
+    camera.position.z
+  );
+
+  scene.add(objet);
+
+  // animation → traverse rapidement
+  gsap.to(objet.position, {
+    x: camera.position.x + 2,
+    duration: 0.4,
+    ease: 'power2.out',
+    onComplete: () => {
+      scene.remove(objet);
+    },
+  });
+}
+function ombreRapide() {
+  const geo = new THREE.PlaneGeometry(1, 2);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0.6,
+  });
+
+  const ombre = new THREE.Mesh(geo, mat);
+
+  ombre.position.set(
+    camera.position.x - 2,
+    camera.position.y,
+    camera.position.z
+  );
+
+  scene.add(ombre);
+
+  gsap.to(ombre.position, {
+    x: camera.position.x + 2,
+    duration: 0.4,
+    ease: 'power2.out',
+    onComplete: () => {
+      scene.remove(ombre);
+    },
+  });
+}
+function respirationCamera() {
+  const t = Date.now() * 0.002;
+  camera.position.y += Math.sin(t) * 0.002;
+}
 // ─── VICTOIRE ─────────────────────────
 function declencherVictoire() {
   jeuActif = false;
